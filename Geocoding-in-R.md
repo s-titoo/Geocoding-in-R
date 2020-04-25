@@ -131,23 +131,27 @@ this tutorial, so not to worry about it later. The purpose of each
 package will be described in the corresponding part of the article.
 Please also note that we are using software version R 3.6.2 for Windows.
 
-    # install packages
+``` r
+# install packages
 
-    install.packages("ggmap")
-    install.packages("tmaptools")
-    install.packages("RCurl")
-    install.packages("jsonlite")
-    install.packages("tidyverse")
-    install.packages("leaflet")
+install.packages("ggmap")
+install.packages("tmaptools")
+install.packages("RCurl")
+install.packages("jsonlite")
+install.packages("tidyverse")
+install.packages("leaflet")
+```
 
-    # load packages
+``` r
+# load packages
 
-    library(ggmap)
-    library(tmaptools)
-    library(RCurl)
-    library(jsonlite)
-    library(tidyverse)
-    library(leaflet)
+library(ggmap)
+library(tmaptools)
+library(RCurl)
+library(jsonlite)
+library(tidyverse)
+library(leaflet)
+```
 
 Geocoding With R Packages
 -------------------------
@@ -162,9 +166,11 @@ The first package is called
 allows you to connect to the Google Maps API. Before you can start using
 this package, you need to provide R with your API key.
 
-    # replace "api_key" with your API key
+``` r
+# replace "api_key" with your API key
 
-    register_google(key = api_key)
+register_google(key = api_key)
+```
 
 Let’s now use `geocode` function from this package on the sample of
 twelve London pubs to demonstrate how it works. The function accepts as
@@ -179,20 +185,22 @@ its `output` argument either:
 Each option corresponds to the type of information generated. Generally,
 we don’t need more information than *more* option provides.
 
-    # create a list of London pubs
+``` r
+# create a list of London pubs
 
-    pubs <- c("The Angel, Bermondsey", "The Churchill Arms, Notting Hill", "The Auld Shillelagh, Stoke Newington", "The Sekforde, Clerkenwell", "The Dove, Hammersmith", "The Crown and Sugar Loaf, Fleet Street", "The Lamb, Holborn", "Prince of Greenwich, Greenwich", "Ye Olde Mitre, Hatton Garden", "The Glory, Haggerston", "The Blue Posts, Soho", "The Old Bank of England, Fleet Street")
+pubs <- c("The Angel, Bermondsey", "The Churchill Arms, Notting Hill", "The Auld Shillelagh, Stoke Newington", "The Sekforde, Clerkenwell", "The Dove, Hammersmith", "The Crown and Sugar Loaf, Fleet Street", "The Lamb, Holborn", "Prince of Greenwich, Greenwich", "Ye Olde Mitre, Hatton Garden", "The Glory, Haggerston", "The Blue Posts, Soho", "The Old Bank of England, Fleet Street")
 
-    pubs_df <- data.frame(Pubs = pubs, stringsAsFactors = FALSE)
+pubs_df <- data.frame(Pubs = pubs, stringsAsFactors = FALSE)
 
-    # run the geocode function from ggmap package
+# run the geocode function from ggmap package
 
-    pubs_ggmap <- geocode(location = pubs, output = "more", source = "google")
-    pubs_ggmap <- cbind(pubs_df, pubs_ggmap)
+pubs_ggmap <- geocode(location = pubs, output = "more", source = "google")
+pubs_ggmap <- cbind(pubs_df, pubs_ggmap)
 
-    # print the results
+# print the results
 
-    pubs_ggmap[, 1:6]
+pubs_ggmap[, 1:6]
+```
 
     ##                                      Pubs        lon      lat          type
     ## 1                   The Angel, Bermondsey -0.0590456 51.50064           bar
@@ -238,34 +246,36 @@ This time we will store our results in a list rather than a data frame.
 Each element of this list will contain another list with information
 about the pub’s name, coordinates and address.
 
-    # extract the coordinates of London pubs
+``` r
+# extract the coordinates of London pubs
 
-    pubs_ggmap_crd <- list()
+pubs_ggmap_crd <- list()
 
-    for (i in 1:dim(pubs_ggmap)[1]) {
-      
-        lon <- pubs_ggmap$lon[i]
-        lat <- pubs_ggmap$lat[i]
-        pubs_ggmap_crd[[i]] <- c(lon, lat)
-        
-    }
+for (i in 1:dim(pubs_ggmap)[1]) {
+  
+    lon <- pubs_ggmap$lon[i]
+    lat <- pubs_ggmap$lat[i]
+    pubs_ggmap_crd[[i]] <- c(lon, lat)
+    
+}
 
-    # reverse geocode the coordinates and save them to the list
+# reverse geocode the coordinates and save them to the list
 
-    pubs_ggmap_address <- list()
+pubs_ggmap_address <- list()
 
-    for (i in 1:length(pubs_ggmap_crd)) {
-      
-        pub <- pubs[i]
-        crd <- pubs_ggmap_crd[[i]]
-        address <- revgeocode(location = crd, output = "address")
-        pubs_ggmap_address[[i]] <- list(pub, crd, address)
-        
-    }
+for (i in 1:length(pubs_ggmap_crd)) {
+  
+    pub <- pubs[i]
+    crd <- pubs_ggmap_crd[[i]]
+    address <- revgeocode(location = crd, output = "address")
+    pubs_ggmap_address[[i]] <- list(pub, crd, address)
+    
+}
 
-    # print the details of the first pub
+# print the details of the first pub
 
-    pubs_ggmap_address[[1]]
+pubs_ggmap_address[[1]]
+```
 
     ## [[1]]
     ## [1] "The Angel, Bermondsey"
@@ -295,27 +305,29 @@ the pubs - *The Glory* - couldn’t be located despite all my efforts. So,
 be aware that the quality of data and its completeness might vary among
 different services providers.
 
-    # modifying some search requests
+``` r
+# modifying some search requests
 
-    pubs_m <- pubs
-    pubs_m[pubs_m=="The Crown and Sugar Loaf, Fleet Street"] <- "The Crown and Sugar Loaf"
-    pubs_m[pubs_m=="Ye Olde Mitre, Hatton Garden"] <- "Ye Olde Mitre"
-    pubs_m_df <- data.frame(Pubs = pubs_m, stringsAsFactors = FALSE)
+pubs_m <- pubs
+pubs_m[pubs_m=="The Crown and Sugar Loaf, Fleet Street"] <- "The Crown and Sugar Loaf"
+pubs_m[pubs_m=="Ye Olde Mitre, Hatton Garden"] <- "Ye Olde Mitre"
+pubs_m_df <- data.frame(Pubs = pubs_m, stringsAsFactors = FALSE)
 
-    # geocoding the London pubs
-    # "bar" is special phrase added to limit the search
+# geocoding the London pubs
+# "bar" is special phrase added to limit the search
 
-    pubs_tmaptools <- geocode_OSM(paste(pubs_m, "bar", sep = " "),
-                                  details = TRUE, as.data.frame = TRUE)
+pubs_tmaptools <- geocode_OSM(paste(pubs_m, "bar", sep = " "),
+                              details = TRUE, as.data.frame = TRUE)
 
-    # extracting from the result only coordinates and address
+# extracting from the result only coordinates and address
 
-    pubs_tmaptools <- pubs_tmaptools[, c("lat", "lon", "display_name")]
-    pubs_tmaptools <- cbind(Pubs = pubs_m_df[-10, ], pubs_tmaptools)
+pubs_tmaptools <- pubs_tmaptools[, c("lat", "lon", "display_name")]
+pubs_tmaptools <- cbind(Pubs = pubs_m_df[-10, ], pubs_tmaptools)
 
-    # print the results
+# print the results
 
-    pubs_tmaptools
+pubs_tmaptools
+```
 
     ##                                     Pubs      lat         lon
     ## 1                  The Angel, Bermondsey 51.50064 -0.05906115
@@ -345,38 +357,40 @@ different services providers.
 Now, it’s time for reverse geocoding. In our output we will display the
 very same information as in reverse geocoding request from ggmap.
 
-    # remove The Glory pub from the list ("s" for "short")
+``` r
+# remove The Glory pub from the list ("s" for "short")
 
-    pubs_s <- pubs_m[!pubs_m %in% "The Glory, Haggerston"]
+pubs_s <- pubs_m[!pubs_m %in% "The Glory, Haggerston"]
 
-    # extract the coordinates of London pubs
+# extract the coordinates of London pubs
 
-    pubs_tmaptools_crd <- list()
+pubs_tmaptools_crd <- list()
 
-    for (i in 1:dim(pubs_tmaptools)[1]) {
-        
-        lon <- pubs_tmaptools$lon[i]
-        lat <- pubs_tmaptools$lat[i]
-        pubs_tmaptools_crd[[i]] <- c(lon, lat)
+for (i in 1:dim(pubs_tmaptools)[1]) {
+    
+    lon <- pubs_tmaptools$lon[i]
+    lat <- pubs_tmaptools$lat[i]
+    pubs_tmaptools_crd[[i]] <- c(lon, lat)
 
-    }
+}
 
-    # reverse geocode the coordinates and save them to a list
+# reverse geocode the coordinates and save them to a list
 
-    pubs_tmaptools_address <- list()
+pubs_tmaptools_address <- list()
 
-    for (i in 1:length(pubs_tmaptools_crd)) {
-      
-        pub <- pubs_s[i]
-        crd <- pubs_tmaptools_crd[[i]]
-        address <- rev_geocode_OSM(x = crd[1], y = crd[2],as.data.frame = TRUE)[, c("name")]
-        pubs_tmaptools_address[[i]] <- list(pub, crd, address)
-        
-    }
+for (i in 1:length(pubs_tmaptools_crd)) {
+  
+    pub <- pubs_s[i]
+    crd <- pubs_tmaptools_crd[[i]]
+    address <- rev_geocode_OSM(x = crd[1], y = crd[2],as.data.frame = TRUE)[, c("name")]
+    pubs_tmaptools_address[[i]] <- list(pub, crd, address)
+    
+}
 
-    # print the details about the first pub
+# print the details about the first pub
 
-    pubs_tmaptools_address[[1]]
+pubs_tmaptools_address[[1]]
+```
 
     ## [[1]]
     ## [1] "The Angel, Bermondsey"
@@ -423,14 +437,16 @@ be sending this request from R.
 
 A Geocoding API requests take the following format.
 
-    # format
-    https://maps.googleapis.com/maps/api/geocode/outputFormat?parameters
+``` r
+# format
+https://maps.googleapis.com/maps/api/geocode/outputFormat?parameters
 
-    # geocoding example
-    https://maps.googleapis.com/maps/api/geocode/json?address=The+Churchill+Arms,+Notting+Hill&key=YOUR_API_KEY
+# geocoding example
+https://maps.googleapis.com/maps/api/geocode/json?address=The+Churchill+Arms,+Notting+Hill&key=YOUR_API_KEY
 
-    # reverse geocoding example
-    https://maps.googleapis.com/maps/api/geocode/json?latlng=51.5069117,-0.194801&key=YOUR_API_KEY
+# reverse geocoding example
+https://maps.googleapis.com/maps/api/geocode/json?latlng=51.5069117,-0.194801&key=YOUR_API_KEY
+```
 
 So, the web request you send consists of several parts - the API url
 followed by `outputFormat` (json or xml) and the list of `parameters`.
@@ -504,21 +520,23 @@ information about the billing!**
 
 The format of API calls is given below.
 
-    # PLACE SEARCH
+``` r
+# PLACE SEARCH
 
-    # format
-    https://maps.googleapis.com/maps/api/place/findplacefromtext/outputFormat?parameters
+# format
+https://maps.googleapis.com/maps/api/place/findplacefromtext/outputFormat?parameters
 
-    # example
-    https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=The+Churchill+Arms,+Notting+Hill&inputtype=textquery&fields=photos,formatted_address,name,place_id&key=YOUR_API_KEY
+# example
+https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=The+Churchill+Arms,+Notting+Hill&inputtype=textquery&fields=photos,formatted_address,name,place_id&key=YOUR_API_KEY
 
-    # PLACE DETAILS
+# PLACE DETAILS
 
-    # format
-    https://maps.googleapis.com/maps/api/place/details/outputFormat?parameters
+# format
+https://maps.googleapis.com/maps/api/place/details/outputFormat?parameters
 
-    # example
-    https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJGTDVMfoPdkgROs9QO9Kgmjc&fields=formatted_phone_number,website&key=YOUR_API_KEY
+# example
+https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJGTDVMfoPdkgROs9QO9Kgmjc&fields=formatted_phone_number,website&key=YOUR_API_KEY
+```
 
 And again, if you consider building an actual app, it is worth to have a
 look at
@@ -577,113 +595,115 @@ As this chunk of code is not a core part of our function and we can
 easily deal without it, I will not explain how it works. But the code
 itself is given below for you to explore.
 
-    # ///////////////////////////////////////////////
-    # SUPLEMENTARY FUNCTIONS
-    # ///////////////////////////////////////////////
+``` r
+# ///////////////////////////////////////////////
+# SUPLEMENTARY FUNCTIONS
+# ///////////////////////////////////////////////
 
-    # ///////////////////////////////////////////////
-    # 1. CHECK ARGUMENTS
-    # ///////////////////////////////////////////////
+# ///////////////////////////////////////////////
+# 1. CHECK ARGUMENTS
+# ///////////////////////////////////////////////
 
-    check_arguments <- function(search_query_arg, fields_arg, key_arg) {
+check_arguments <- function(search_query_arg, fields_arg, key_arg) {
 
-        # create empty error messages
-        msg_1 <- msg_2 <- msg_3 <- ""
+    # create empty error messages
+    msg_1 <- msg_2 <- msg_3 <- ""
 
-        # check if "search_query" argument is a string or
-        # a list/vector/data frame with string data
+    # check if "search_query" argument is a string or
+    # a list/vector/data frame with string data
 
-        if(is.data.frame(search_query_arg) || is.matrix(search_query_arg)) {
-            is_df <- TRUE
+    if(is.data.frame(search_query_arg) || is.matrix(search_query_arg)) {
+        is_df <- TRUE
+    } else {
+        is_df <- FALSE
+    }
+
+    if(is_df) {
+        if(dim(search_query_arg)[2] > 1) {
+            error_1 <- TRUE
+        } else if(!is.character(search_query_arg[, 1])) {
+            error_1 <- TRUE
         } else {
-            is_df <- FALSE
+            error_1 <- FALSE
         }
+    }
 
-        if(is_df) {
-            if(dim(search_query_arg)[2] > 1) {
-                error_1 <- TRUE
-            } else if(!is.character(search_query_arg[, 1])) {
-                error_1 <- TRUE
-            } else {
-                error_1 <- FALSE
+    if(!is_df && is.list(search_query_arg)) {
+        match_1 <- c()
+        for(i in 1:length(search_query_arg)) {
+            match_1[i] <- !is.character(search_query_arg[[i]])
+        }
+        if(any(match_1)) {
+            error_1 <- TRUE
+        } else {
+            error_1 <- FALSE
+        }
+    }
+
+    if(!is_df && !is.list(search_query_arg)) {
+        if(!is.character(search_query_arg)) {
+            error_1 <- TRUE
+        } else {
+            error_1 <- FALSE
+        }
+    }
+
+    if(error_1) {
+        msg_1 <- "Error: search_query argument (or any of its elements) is not of a string type"
+    }
+
+    # check if "fields" argument:
+    # consists of a single word only - "all"
+    # OR
+    # * is a string vector of length <=3
+    # * and consists of words 'coordinates', 'address', 'contacts' only
+
+    match_2 <- fields_arg %in% c("coordinates", "address", "contacts")
+
+    if (!(fields_arg %in% "all" && length(unique(fields_arg)) == 1)) {
+            if (!all(match_2) || length(unique(fields_arg)) > 3) {
+                    msg_2 <- paste0("Error: fields argument must be ",
+                      "either a combination of 'coordinates', ",
+                      "'address', and 'contacts' or a single ",
+                      "word 'all'")
             }
-        }
+    }
 
-        if(!is_df && is.list(search_query_arg)) {
-            match_1 <- c()
-            for(i in 1:length(search_query_arg)) {
-                match_1[i] <- !is.character(search_query_arg[[i]])
-            }
-            if(any(match_1)) {
-                error_1 <- TRUE
-            } else {
-                error_1 <- FALSE
-            }
-        }
+    # check if "key" argument is a string
 
-        if(!is_df && !is.list(search_query_arg)) {
-            if(!is.character(search_query_arg)) {
-                error_1 <- TRUE
-            } else {
-                error_1 <- FALSE
-            }
-        }
-
-        if(error_1) {
-            msg_1 <- "Error: search_query argument (or any of its elements) is not of a string type"
-        }
-
-        # check if "fields" argument:
-        # consists of a single word only - "all"
-        # OR
-        # * is a string vector of length <=3
-        # * and consists of words 'coordinates', 'address', 'contacts' only
-
-        match_2 <- fields_arg %in% c("coordinates", "address", "contacts")
-
-        if (!(fields_arg %in% "all" && length(unique(fields_arg)) == 1)) {
-                if (!all(match_2) || length(unique(fields_arg)) > 3) {
-                        msg_2 <- paste0("Error: fields argument must be ",
-                          "either a combination of 'coordinates', ",
-                          "'address', and 'contacts' or a single ",
-                          "word 'all'")
-                }
-        }
-
-        # check if "key" argument is a string
-
-        if(is.list(key_arg)) {
-            if(length(key_arg) > 1) {
-                error_3 <- TRUE
-            } else if(!is.character(key_arg[[1]])) {
-                error_3 <- TRUE
-            } else {
-                error_3 <- FALSE
-            }
-        } else if(!is.character(key_arg) || length(key_arg) > 1) {
+    if(is.list(key_arg)) {
+        if(length(key_arg) > 1) {
+            error_3 <- TRUE
+        } else if(!is.character(key_arg[[1]])) {
             error_3 <- TRUE
         } else {
             error_3 <- FALSE
         }
-
-        if(error_3) {
-            msg_3 <- "Error: key argument is not of a string type"
-        }
-
-        # return error messages (if any)
-
-        errors <- c(msg_1, msg_2, msg_3)
-
-        if(any(errors!="")) {
-            errors <- paste(errors[errors!=""], collapse = "\n")
-            return(list(TRUE, errors))
-        } else {
-            return(list(FALSE))
-        }
-
+    } else if(!is.character(key_arg) || length(key_arg) > 1) {
+        error_3 <- TRUE
+    } else {
+        error_3 <- FALSE
     }
 
-    # ///////////////////////////////////////////////
+    if(error_3) {
+        msg_3 <- "Error: key argument is not of a string type"
+    }
+
+    # return error messages (if any)
+
+    errors <- c(msg_1, msg_2, msg_3)
+
+    if(any(errors!="")) {
+        errors <- paste(errors[errors!=""], collapse = "\n")
+        return(list(TRUE, errors))
+    } else {
+        return(list(FALSE))
+    }
+
+}
+
+# ///////////////////////////////////////////////
+```
 
 Let’s test whether this function works as we expect.
 
@@ -740,13 +760,13 @@ List of test cases:
         6.  a list of characters with wrong elements - list(“alls”);
         7.  a list of characters with wrong elements - list(“address”,
             “contact”);
-        8.  a character vector with &gt;1 elements and “all” - c(“all”,
+        8.  a character vector with \>1 elements and “all” - c(“all”,
             “coordinates”);
-        9.  a character vector with &gt;3 unique elements -
+        9.  a character vector with \>3 unique elements -
             c(“coordinates”, “address”, “x”, “y”);
-        10. a list of characters with &gt;1 element and “all” -
+        10. a list of characters with \>1 element and “all” -
             list(“all”, “coordinates”);
-        11. a list of characters with &gt;3 unique elements -
+        11. a list of characters with \>3 unique elements -
             list(“coordinates”, “x”, “y”, “z”);
 
 3.  `key`:
@@ -766,143 +786,149 @@ some cases which code below doesn’t account for. But I think it still
 covers more than 90% of wrong input scenarios and is a pretty decent
 job.
 
-    # /////////////////////////////
-    # let's create our inputs first
-    # /////////////////////////////
+``` r
+# /////////////////////////////
+# let's create our inputs first
+# /////////////////////////////
 
-    search_query_1_1 <- pubs[1]
-    search_query_1_2 <- pubs
-    search_query_1_3 <- as.list(pubs)
-    search_query_1_4 <- as.matrix(pubs)
-    search_query_1_5 <- as.data.frame(pubs, stringsAsFactors = FALSE)
+search_query_1_1 <- pubs[1]
+search_query_1_2 <- pubs
+search_query_1_3 <- as.list(pubs)
+search_query_1_4 <- as.matrix(pubs)
+search_query_1_5 <- as.data.frame(pubs, stringsAsFactors = FALSE)
 
-    search_query_2_1 <- 1
-    search_query_2_2 <- c(1,2,3)
-    search_query_2_3 <- list(1,2,3)
-    search_query_2_4 <- as.matrix(c(1,2,3))
-    search_query_2_5 <- cbind(as.matrix(pubs), as.matrix(pubs))
-    search_query_2_6 <- as.data.frame(c(1,2,3))
-    search_query_2_7 <- data.frame(one = pubs, two = pubs, stringsAsFactors = FALSE)
+search_query_2_1 <- 1
+search_query_2_2 <- c(1,2,3)
+search_query_2_3 <- list(1,2,3)
+search_query_2_4 <- as.matrix(c(1,2,3))
+search_query_2_5 <- cbind(as.matrix(pubs), as.matrix(pubs))
+search_query_2_6 <- as.data.frame(c(1,2,3))
+search_query_2_7 <- data.frame(one = pubs, two = pubs, stringsAsFactors = FALSE)
 
-    fields_1_1 <- "all";
-    fields_1_2 <- "coordinates"
-    fields_1_3 <- c("all")
-    fields_1_4 <- c("coordinates", "address", "contacts")
-    fields_1_5 <- c("all", "all", "all")
-    fields_1_6 <- c("coordinates", "address", "address", "address")
-    fields_1_7 <- list("all")
-    fields_1_8 <- list("coordinates", "address", "contacts")
-    fields_1_9 <- list("all", "all", "all")
-    fields_1_10 <- list("contacts", "address", "address", "address")
+fields_1_1 <- "all";
+fields_1_2 <- "coordinates"
+fields_1_3 <- c("all")
+fields_1_4 <- c("coordinates", "address", "contacts")
+fields_1_5 <- c("all", "all", "all")
+fields_1_6 <- c("coordinates", "address", "address", "address")
+fields_1_7 <- list("all")
+fields_1_8 <- list("coordinates", "address", "contacts")
+fields_1_9 <- list("all", "all", "all")
+fields_1_10 <- list("contacts", "address", "address", "address")
 
-    fields_2_1 <- 1
-    fields_2_2 <- c(1,2,3)
-    fields_2_3 <- list(1,2,3)
-    fields_2_4 <- c("alls")
-    fields_2_5 <- c("coordinate", "address")
-    fields_2_6 <- list("alls")
-    fields_2_7 <- list("address", "contact")
-    fields_2_8 <- c("all", "coordinates")
-    fields_2_9 <- c("coordinates", "address", "x", "y")
-    fields_2_10 <- list("all", "coordinates")
-    fields_2_11 <- list("coordinates", "x", "y", "z")
+fields_2_1 <- 1
+fields_2_2 <- c(1,2,3)
+fields_2_3 <- list(1,2,3)
+fields_2_4 <- c("alls")
+fields_2_5 <- c("coordinate", "address")
+fields_2_6 <- list("alls")
+fields_2_7 <- list("address", "contact")
+fields_2_8 <- c("all", "coordinates")
+fields_2_9 <- c("coordinates", "address", "x", "y")
+fields_2_10 <- list("all", "coordinates")
+fields_2_11 <- list("coordinates", "x", "y", "z")
 
-    key_1_1 <- "xyz"
+key_1_1 <- "xyz"
 
-    key_2_1 <- 1
-    key_2_2 <- c("x", "y", "z")
-    key_2_3 <- list("x", "y", "z")
+key_2_1 <- 1
+key_2_2 <- c("x", "y", "z")
+key_2_3 <- list("x", "y", "z")
 
-    # ////////////////////////////////////
-    # now let's run some tests for SUCCESS
-    # ////////////////////////////////////
+# ////////////////////////////////////
+# now let's run some tests for SUCCESS
+# ////////////////////////////////////
 
-    sq_1_1 <- check_arguments(search_query_1_1, "address", "key")
-    sq_1_2 <- check_arguments(search_query_1_2, "address", "key")
-    sq_1_3 <- check_arguments(search_query_1_3, "address", "key")
-    sq_1_4 <- check_arguments(search_query_1_4, "address", "key")
-    sq_1_5 <- check_arguments(search_query_1_5, "address", "key")
+sq_1_1 <- check_arguments(search_query_1_1, "address", "key")
+sq_1_2 <- check_arguments(search_query_1_2, "address", "key")
+sq_1_3 <- check_arguments(search_query_1_3, "address", "key")
+sq_1_4 <- check_arguments(search_query_1_4, "address", "key")
+sq_1_5 <- check_arguments(search_query_1_5, "address", "key")
 
-    f_1_1 <- check_arguments("search", fields_1_1, "key")
-    f_1_2 <- check_arguments("search", fields_1_2, "key")
-    f_1_3 <- check_arguments("search", fields_1_3, "key")
-    f_1_4 <- check_arguments("search", fields_1_4, "key")
-    f_1_5 <- check_arguments("search", fields_1_5, "key")
-    f_1_6 <- check_arguments("search", fields_1_6, "key")
-    f_1_7 <- check_arguments("search", fields_1_7, "key")
-    f_1_8 <- check_arguments("search", fields_1_8, "key")
-    f_1_9 <- check_arguments("search", fields_1_9, "key")
-    f_1_10 <- check_arguments("search", fields_1_10, "key")
+f_1_1 <- check_arguments("search", fields_1_1, "key")
+f_1_2 <- check_arguments("search", fields_1_2, "key")
+f_1_3 <- check_arguments("search", fields_1_3, "key")
+f_1_4 <- check_arguments("search", fields_1_4, "key")
+f_1_5 <- check_arguments("search", fields_1_5, "key")
+f_1_6 <- check_arguments("search", fields_1_6, "key")
+f_1_7 <- check_arguments("search", fields_1_7, "key")
+f_1_8 <- check_arguments("search", fields_1_8, "key")
+f_1_9 <- check_arguments("search", fields_1_9, "key")
+f_1_10 <- check_arguments("search", fields_1_10, "key")
 
-    k_1_1 <- check_arguments("search", "address", key_1_1)
+k_1_1 <- check_arguments("search", "address", key_1_1)
 
-    # let's check if all the elements in the array below are FALSE
+# let's check if all the elements in the array below are FALSE
 
-    success <- c(sq_1_1[[1]], sq_1_2[[1]], sq_1_3[[1]], sq_1_4[[1]], sq_1_5[[1]],
-                 f_1_1[[1]], f_1_2[[1]], f_1_3[[1]], f_1_4[[1]], f_1_5[[1]],
-                 f_1_6[[1]], f_1_7[[1]], f_1_8[[1]], f_1_9[[1]], f_1_10[[1]],
-                 k_1_1[[1]])
+success <- c(sq_1_1[[1]], sq_1_2[[1]], sq_1_3[[1]], sq_1_4[[1]], sq_1_5[[1]],
+             f_1_1[[1]], f_1_2[[1]], f_1_3[[1]], f_1_4[[1]], f_1_5[[1]],
+             f_1_6[[1]], f_1_7[[1]], f_1_8[[1]], f_1_9[[1]], f_1_10[[1]],
+             k_1_1[[1]])
 
-    if(length(unique(success)) != 1) {
-        FALSE
-    } else if(unique(success) == TRUE) {
-        FALSE
-    } else {
-        TRUE
-    }
-
-    ## [1] TRUE
-
-    # ////////////////////////////////////
-    # now let's run some tests for FAILURE
-    # ////////////////////////////////////
-
-    sq_2_1 <- check_arguments(search_query_2_1, "address", "key")
-    sq_2_2 <- check_arguments(search_query_2_2, "address", "key")
-    sq_2_3 <- check_arguments(search_query_2_3, "address", "key")
-    sq_2_4 <- check_arguments(search_query_2_4, "address", "key")
-    sq_2_5 <- check_arguments(search_query_2_5, "address", "key")
-    sq_2_6 <- check_arguments(search_query_2_6, "address", "key")
-    sq_2_7 <- check_arguments(search_query_2_7, "address", "key")
-
-    f_2_1 <- check_arguments("search", fields_2_1, "key")
-    f_2_2 <- check_arguments("search", fields_2_2, "key")
-    f_2_3 <- check_arguments("search", fields_2_3, "key")
-    f_2_4 <- check_arguments("search", fields_2_4, "key")
-    f_2_5 <- check_arguments("search", fields_2_5, "key")
-    f_2_6 <- check_arguments("search", fields_2_6, "key")
-    f_2_7 <- check_arguments("search", fields_2_7, "key")
-    f_2_8 <- check_arguments("search", fields_2_8, "key")
-    f_2_9 <- check_arguments("search", fields_2_9, "key")
-    f_2_10 <- check_arguments("search", fields_2_10, "key")
-    f_2_11 <- check_arguments("search", fields_2_11, "key")
-
-    k_2_1 <- check_arguments("search", "address", key_2_1)
-    k_2_2 <- check_arguments("search", "address", key_2_2)
-    k_2_3 <- check_arguments("search", "address", key_2_3)
-
-    # let's check if all the elements in the array below are TRUE
-
-    failure <- c(sq_2_1[[1]], sq_2_2[[1]], sq_2_3[[1]], sq_2_4[[1]], sq_2_5[[1]],
-                 sq_2_6[[1]], sq_2_7[[1]], f_2_1[[1]], f_2_2[[1]], f_2_3[[1]], f_2_4[[1]],
-                 f_2_5[[1]], f_2_6[[1]], f_2_7[[1]], f_2_8[[1]], f_2_9[[1]], f_2_10[[1]],
-                 f_2_11[[1]], k_2_1[[1]], k_2_2[[1]], k_2_3[[1]])
-
-    all(failure)
+if(length(unique(success)) != 1) {
+    FALSE
+} else if(unique(success) == TRUE) {
+    FALSE
+} else {
+    TRUE
+}
+```
 
     ## [1] TRUE
 
-    # let's see if error messages are generated correctly
+``` r
+# ////////////////////////////////////
+# now let's run some tests for FAILURE
+# ////////////////////////////////////
 
-    failure_sq <- unique(c(sq_2_1[[2]], sq_2_2[[2]], sq_2_3[[2]], sq_2_4[[2]], sq_2_5[[2]],
-                    sq_2_6[[2]], sq_2_7[[2]]))
-    failure_f <- unique(c(f_2_1[[2]], f_2_2[[2]], f_2_3[[2]], f_2_4[[2]], f_2_5[[2]],
-                   f_2_6[[2]], f_2_7[[2]], f_2_8[[2]], f_2_9[[2]], f_2_10[[2]], f_2_11[[2]]))
-    failure_k <- unique(c(k_2_1[[2]], k_2_2[[2]], k_2_3[[2]]))
+sq_2_1 <- check_arguments(search_query_2_1, "address", "key")
+sq_2_2 <- check_arguments(search_query_2_2, "address", "key")
+sq_2_3 <- check_arguments(search_query_2_3, "address", "key")
+sq_2_4 <- check_arguments(search_query_2_4, "address", "key")
+sq_2_5 <- check_arguments(search_query_2_5, "address", "key")
+sq_2_6 <- check_arguments(search_query_2_6, "address", "key")
+sq_2_7 <- check_arguments(search_query_2_7, "address", "key")
 
-    messages <- list(failure_sq, failure_f, failure_k)
+f_2_1 <- check_arguments("search", fields_2_1, "key")
+f_2_2 <- check_arguments("search", fields_2_2, "key")
+f_2_3 <- check_arguments("search", fields_2_3, "key")
+f_2_4 <- check_arguments("search", fields_2_4, "key")
+f_2_5 <- check_arguments("search", fields_2_5, "key")
+f_2_6 <- check_arguments("search", fields_2_6, "key")
+f_2_7 <- check_arguments("search", fields_2_7, "key")
+f_2_8 <- check_arguments("search", fields_2_8, "key")
+f_2_9 <- check_arguments("search", fields_2_9, "key")
+f_2_10 <- check_arguments("search", fields_2_10, "key")
+f_2_11 <- check_arguments("search", fields_2_11, "key")
 
-    messages
+k_2_1 <- check_arguments("search", "address", key_2_1)
+k_2_2 <- check_arguments("search", "address", key_2_2)
+k_2_3 <- check_arguments("search", "address", key_2_3)
+
+# let's check if all the elements in the array below are TRUE
+
+failure <- c(sq_2_1[[1]], sq_2_2[[1]], sq_2_3[[1]], sq_2_4[[1]], sq_2_5[[1]],
+             sq_2_6[[1]], sq_2_7[[1]], f_2_1[[1]], f_2_2[[1]], f_2_3[[1]], f_2_4[[1]],
+             f_2_5[[1]], f_2_6[[1]], f_2_7[[1]], f_2_8[[1]], f_2_9[[1]], f_2_10[[1]],
+             f_2_11[[1]], k_2_1[[1]], k_2_2[[1]], k_2_3[[1]])
+
+all(failure)
+```
+
+    ## [1] TRUE
+
+``` r
+# let's see if error messages are generated correctly
+
+failure_sq <- unique(c(sq_2_1[[2]], sq_2_2[[2]], sq_2_3[[2]], sq_2_4[[2]], sq_2_5[[2]],
+                sq_2_6[[2]], sq_2_7[[2]]))
+failure_f <- unique(c(f_2_1[[2]], f_2_2[[2]], f_2_3[[2]], f_2_4[[2]], f_2_5[[2]],
+               f_2_6[[2]], f_2_7[[2]], f_2_8[[2]], f_2_9[[2]], f_2_10[[2]], f_2_11[[2]]))
+failure_k <- unique(c(k_2_1[[2]], k_2_2[[2]], k_2_3[[2]]))
+
+messages <- list(failure_sq, failure_f, failure_k)
+
+messages
+```
 
     ## [[1]]
     ## [1] "Error: search_query argument (or any of its elements) is not of a string type"
@@ -913,9 +939,11 @@ job.
     ## [[3]]
     ## [1] "Error: key argument is not of a string type"
 
-    # and finally let's see how several error messages are displayed at once
+``` r
+# and finally let's see how several error messages are displayed at once
 
-    cat(check_arguments(c(1,2,3), "contact", 1)[[2]])
+cat(check_arguments(c(1,2,3), "contact", 1)[[2]])
+```
 
     ## Error: search_query argument (or any of its elements) is not of a string type
     ## Error: fields argument must be either a combination of 'coordinates', 'address', and 'contacts' or a single word 'all'
@@ -940,86 +968,88 @@ package. If you don’t know what it is, visit this
 [page](https://developers.google.com/maps/documentation/geocoding/web-service-best-practices#BuildingURLs)
 with detailed explanation.
 
-    # ///////////////////////////////////////////////
-    # SUPLEMENTARY FUNCTIONS
-    # ///////////////////////////////////////////////
+``` r
+# ///////////////////////////////////////////////
+# SUPLEMENTARY FUNCTIONS
+# ///////////////////////////////////////////////
 
-    # ///////////////////////////////////////////////
-    # 2. GENERATE API CALLS
-    # ///////////////////////////////////////////////
+# ///////////////////////////////////////////////
+# 2. GENERATE API CALLS
+# ///////////////////////////////////////////////
 
-    url_google_geocoding <- function(search_query_url, key_url) {
+url_google_geocoding <- function(search_query_url, key_url) {
 
-        # load libraries
-        library(RCurl)
+    # load libraries
+    library(RCurl)
 
-        # convert input into a list
-        search_query_url <- sapply(search_query_url, as.list)
+    # convert input into a list
+    search_query_url <- sapply(search_query_url, as.list)
 
-        # google gecoding api url
-        url_geocoding_api <- "https://maps.googleapis.com/maps/api/geocode/"
+    # google gecoding api url
+    url_geocoding_api <- "https://maps.googleapis.com/maps/api/geocode/"
 
-        # percent-encode search request
-        search_query_url <- sapply(search_query_url, URLencode)
+    # percent-encode search request
+    search_query_url <- sapply(search_query_url, URLencode)
 
-        # construct search request for geocode
-        url_geocoding_call <- paste0(url_geocoding_api, "json",
-                                 "?address=", search_query_url, "&key=", key_url)
+    # construct search request for geocode
+    url_geocoding_call <- paste0(url_geocoding_api, "json",
+                             "?address=", search_query_url, "&key=", key_url)
 
-        return(url_geocoding_call)
+    return(url_geocoding_call)
 
-    }
+}
 
-    # ///////////////////////////////////////////////
+# ///////////////////////////////////////////////
 
-    url_google_place_search <- function(search_query_url, key_url) {
+url_google_place_search <- function(search_query_url, key_url) {
 
-        # load libraries
-        library(RCurl)
+    # load libraries
+    library(RCurl)
 
-        # convert input into a list
-        search_query_url <- sapply(search_query_url, as.list)
+    # convert input into a list
+    search_query_url <- sapply(search_query_url, as.list)
 
-        # google places api url
-        url_places_api <- "https://maps.googleapis.com/maps/api/place/"
+    # google places api url
+    url_places_api <- "https://maps.googleapis.com/maps/api/place/"
 
-        # percent-encode search request
-        search_query_url <- sapply(search_query_url, URLencode)
+    # percent-encode search request
+    search_query_url <- sapply(search_query_url, URLencode)
 
-        # construct search request for place id
-        url_place_search_call <- paste0(url_places_api, "findplacefromtext/",
-                                    "json", "?input=", search_query_url,
-                                    "&inputtype=textquery","&fields=place_id",
-                                    "&key=", key_url)
+    # construct search request for place id
+    url_place_search_call <- paste0(url_places_api, "findplacefromtext/",
+                                "json", "?input=", search_query_url,
+                                "&inputtype=textquery","&fields=place_id",
+                                "&key=", key_url)
 
-        return(url_place_search_call)
+    return(url_place_search_call)
 
-    }
+}
 
-    # ///////////////////////////////////////////////
+# ///////////////////////////////////////////////
 
-    url_google_place_details <- function(place_id_url, key_url) {
+url_google_place_details <- function(place_id_url, key_url) {
 
-        # load libraries
-        library(RCurl)
+    # load libraries
+    library(RCurl)
 
-        # google places api url
-        url_places_api <- "https://maps.googleapis.com/maps/api/place/"
+    # google places api url
+    url_places_api <- "https://maps.googleapis.com/maps/api/place/"
 
-        # in case you would want to add "fields" as an argument
-        # fields_url <- paste(fields_url, collapse = ",")
+    # in case you would want to add "fields" as an argument
+    # fields_url <- paste(fields_url, collapse = ",")
 
-        # construct search request for place details
-        url_place_details_call <- paste0(url_places_api, "details/",
-                                    "json", "?place_id=", place_id_url,
-                                    "&fields=formatted_phone_number,website",
-                                    "&key=", key_url)
+    # construct search request for place details
+    url_place_details_call <- paste0(url_places_api, "details/",
+                                "json", "?place_id=", place_id_url,
+                                "&fields=formatted_phone_number,website",
+                                "&key=", key_url)
 
-        return(url_place_details_call)
+    return(url_place_details_call)
 
-    }
+}
 
-    # ///////////////////////////////////////////////
+# ///////////////////////////////////////////////
+```
 
 #### Extracting Data From JSON
 
@@ -1031,67 +1061,71 @@ need.
 
 Raw JSON output and its formatted version look like this.
 
-    {
-       "results" : [
-          {
-             "address_components" : [
-                {
-                   "long_name" : "119",
-                   "short_name" : "119",
-                   "types" : [ "street_number" ]
-                },
-                {
-                   "long_name" : "Kensington Church Street",
-                   "short_name" : "Kensington Church St",
-                   "types" : [ "route" ]
-                }
-             ],
-             "formatted_address" : "119 Kensington Church St, Kensington, London W8 7LN, UK",
-             "geometry" : {
-                "location" : {
-                   "lat" : 51.5069117,
-                   "lng" : -0.194801
-                },
-             },
-          }
-       ],
-       "status" : "OK"
-    }
+``` r
+{
+   "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "119",
+               "short_name" : "119",
+               "types" : [ "street_number" ]
+            },
+            {
+               "long_name" : "Kensington Church Street",
+               "short_name" : "Kensington Church St",
+               "types" : [ "route" ]
+            }
+         ],
+         "formatted_address" : "119 Kensington Church St, Kensington, London W8 7LN, UK",
+         "geometry" : {
+            "location" : {
+               "lat" : 51.5069117,
+               "lng" : -0.194801
+            },
+         },
+      }
+   ],
+   "status" : "OK"
+}
+```
 
-    $results
-    $results[[1]]
-    $results[[1]]$address_components
-    $results[[1]]$address_components[[1]]
+``` r
+$results
+$results[[1]]
+$results[[1]]$address_components
+$results[[1]]$address_components[[1]]
 
-    $results[[1]]$address_components[[1]]$long_name
-    [1] "119"
-    $results[[1]]$address_components[[1]]$short_name
-    [1] "119"
-    $results[[1]]$address_components[[1]]$types
-    $results[[1]]$address_components[[1]]$types[[1]]
-    [1] "street_number"
+$results[[1]]$address_components[[1]]$long_name
+[1] "119"
+$results[[1]]$address_components[[1]]$short_name
+[1] "119"
+$results[[1]]$address_components[[1]]$types
+$results[[1]]$address_components[[1]]$types[[1]]
+[1] "street_number"
 
-    $results[[1]]$address_components[[2]]
-    $results[[1]]$address_components[[2]]$long_name
-    [1] "Kensington Church Street"
-    $results[[1]]$address_components[[2]]$short_name
-    [1] "Kensington Church St"
-    $results[[1]]$address_components[[2]]$types
-    $results[[1]]$address_components[[2]]$types[[1]]
-    [1] "route"
+$results[[1]]$address_components[[2]]
+$results[[1]]$address_components[[2]]$long_name
+[1] "Kensington Church Street"
+$results[[1]]$address_components[[2]]$short_name
+[1] "Kensington Church St"
+$results[[1]]$address_components[[2]]$types
+$results[[1]]$address_components[[2]]$types[[1]]
+[1] "route"
 
-    $results[[1]]$formatted_address
-    [1] "119 Kensington Church St, Kensington, London W8 7LN, UK"
+$results[[1]]$formatted_address
+[1] "119 Kensington Church St, Kensington, London W8 7LN, UK"
 
-    $results[[1]]$geometry
-    $results[[1]]$geometry$location
-    $results[[1]]$geometry$location$lat
-    [1] 51.50691
-    $results[[1]]$geometry$location$lng
-    [1] -0.194801
+$results[[1]]$geometry
+$results[[1]]$geometry$location
+$results[[1]]$geometry$location$lat
+[1] 51.50691
+$results[[1]]$geometry$location$lng
+[1] -0.194801
 
-    $status
-    [1] "OK"
+$status
+[1] "OK"
+```
 
 So, how does our function work? Firstly, `fromJSON` function from the
 [jsonlite](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf)
@@ -1105,137 +1139,139 @@ important to replace all `NULL`, which might appear if Google has no
 information about the phone number or the website, with `NA`, so we get
 no error while generating the final data frame.
 
-    # ///////////////////////////////////////////////
-    # SUPLEMENTARY FUNCTIONS
-    # ///////////////////////////////////////////////
+``` r
+# ///////////////////////////////////////////////
+# SUPLEMENTARY FUNCTIONS
+# ///////////////////////////////////////////////
 
-    # ///////////////////////////////////////////////
-    # 3. EXTRACT DATA FROM JSON
-    # ///////////////////////////////////////////////
+# ///////////////////////////////////////////////
+# 3. EXTRACT DATA FROM JSON
+# ///////////////////////////////////////////////
 
-    get_geodata_from_json_google <- function(geodata_json) {
+get_geodata_from_json_google <- function(geodata_json) {
 
-        # load library
-        library(jsonlite)
+    # load library
+    library(jsonlite)
 
-        # convert json output into r object
-        geodata <- lapply(geodata_json, fromJSON,simplifyVector = FALSE)
+    # convert json output into r object
+    geodata <- lapply(geodata_json, fromJSON,simplifyVector = FALSE)
 
-        # extract coordinates, address and city name
+    # extract coordinates, address and city name
 
-        lat_lng_a <- data.frame(lat = NA, lng = NA, address = NA, city = NA)
+    lat_lng_a <- data.frame(lat = NA, lng = NA, address = NA, city = NA)
 
-        for (i in 1:length(geodata)) {
+    for (i in 1:length(geodata)) {
 
-              if (geodata[[i]]$status=="OK") {
+          if (geodata[[i]]$status=="OK") {
+            
+                # extract coordinates and address
+            
+                lat <- geodata[[i]]$results[[1]]$geometry$location$lat
+                lng <- geodata[[i]]$results[[1]]$geometry$location$lng
+                address <- geodata[[i]]$results[[1]]$formatted_address
                 
-                    # extract coordinates and address
+                # find out how many elements there are in "address_components"
+                n <- length(geodata[[i]]$results[[1]]$address_components)           
                 
-                    lat <- geodata[[i]]$results[[1]]$geometry$location$lat
-                    lng <- geodata[[i]]$results[[1]]$geometry$location$lng
-                    address <- geodata[[i]]$results[[1]]$formatted_address
+                # extract city and country
+            
+                for (j in 1:n) {
                     
-                    # find out how many elements there are in "address_components"
-                    n <- length(geodata[[i]]$results[[1]]$address_components)           
+                    # extract the type of the "address_components"
+                    type <- geodata[[i]]$results[[1]]$address_components[[j]]$types[[1]]
                     
-                    # extract city and country
-                
-                    for (j in 1:n) {
-                        
-                        # extract the type of the "address_components"
-                        type <- geodata[[i]]$results[[1]]$address_components[[j]]$types[[1]]
-                        
-                        # extract the city name
-                        
-                        if (type == "postal_town") {
-                            city <- geodata[[i]]$results[[1]]$address_components[[j]]$long_name 
-                        }
-                        
-                    }                
+                    # extract the city name
                     
-                    lat_lng_a[i, ] <- c(lat, lng, address, city)
-                    
-              } else {
-                    lat_lng_a[i, ] <- NA
-              }
-          
-        }
-
-        return(lat_lng_a)
-
-    }
-
-    # ///////////////////////////////////////////////
-
-    get_place_id_from_json_google <- function(place_json) {
-
-        # load library
-        library(jsonlite)
-
-        # convert json output into r object
-        place_search <- lapply(place_json, fromJSON,simplifyVector = FALSE)
-
-        # extract place id
-
-        place_id <- list()
-
-        for (i in 1:length(place_search)) {
-
-              if (place_search[[i]]$status=="OK") {
-                    place_id[[i]] <- place_search[[i]]$candidates[[1]]$place_id
-              } else {
-                    place_id[[i]] <- NA
-              }
-        }
-
-        return(place_id)
-
-    }
-
-    # ///////////////////////////////////////////////
-
-    get_contacts_from_json_google <- function(place_details_json) {
-
-        # load library
-        library(jsonlite)
-
-        # convert json output into r object
-        place_details <- lapply(place_details_json, fromJSON, simplifyVector = FALSE)
-
-        # extract phone number and website
-
-        contacts <- data.frame("phone number" = NA, "website" = NA)
-
-        for (i in 1:length(place_details)) {
-
-              if (place_details[[i]]$status=="OK") {
-                
-                    # get data
-                
-                    phone_number <- place_details[[i]]$result$formatted_phone_number
-                    website <- place_details[[i]]$result$website
-                    
-                    # get rid of NULLs
-                    
-                    info <- list(phone_number, website)
-
-                    for (j in 1:length(info)) {
-                        if (is.null(info[[j]])) info[[j]] <- NA
+                    if (type == "postal_town") {
+                        city <- geodata[[i]]$results[[1]]$address_components[[j]]$long_name 
                     }
-
-                    # create output data frame
-                    contacts[i, ] <- info
                     
-              } else {
-                    contacts[i, ] <- NA
-              }
-        }
-
-        return(contacts)
-
+                }                
+                
+                lat_lng_a[i, ] <- c(lat, lng, address, city)
+                
+          } else {
+                lat_lng_a[i, ] <- NA
+          }
+      
     }
 
-    # ///////////////////////////////////////////////
+    return(lat_lng_a)
+
+}
+
+# ///////////////////////////////////////////////
+
+get_place_id_from_json_google <- function(place_json) {
+
+    # load library
+    library(jsonlite)
+
+    # convert json output into r object
+    place_search <- lapply(place_json, fromJSON,simplifyVector = FALSE)
+
+    # extract place id
+
+    place_id <- list()
+
+    for (i in 1:length(place_search)) {
+
+          if (place_search[[i]]$status=="OK") {
+                place_id[[i]] <- place_search[[i]]$candidates[[1]]$place_id
+          } else {
+                place_id[[i]] <- NA
+          }
+    }
+
+    return(place_id)
+
+}
+
+# ///////////////////////////////////////////////
+
+get_contacts_from_json_google <- function(place_details_json) {
+
+    # load library
+    library(jsonlite)
+
+    # convert json output into r object
+    place_details <- lapply(place_details_json, fromJSON, simplifyVector = FALSE)
+
+    # extract phone number and website
+
+    contacts <- data.frame("phone number" = NA, "website" = NA)
+
+    for (i in 1:length(place_details)) {
+
+          if (place_details[[i]]$status=="OK") {
+            
+                # get data
+            
+                phone_number <- place_details[[i]]$result$formatted_phone_number
+                website <- place_details[[i]]$result$website
+                
+                # get rid of NULLs
+                
+                info <- list(phone_number, website)
+
+                for (j in 1:length(info)) {
+                    if (is.null(info[[j]])) info[[j]] <- NA
+                }
+
+                # create output data frame
+                contacts[i, ] <- info
+                
+          } else {
+                contacts[i, ] <- NA
+          }
+    }
+
+    return(contacts)
+
+}
+
+# ///////////////////////////////////////////////
+```
 
 #### Main Function
 
@@ -1262,106 +1298,110 @@ number* and *website*). And that’s all.
 
 Here is the code.
 
-    # ///////////////////////////////////////////////
-    # MAIN FUNCTION
-    # ///////////////////////////////////////////////
+``` r
+# ///////////////////////////////////////////////
+# MAIN FUNCTION
+# ///////////////////////////////////////////////
 
-    geocode_google <- function(search_query, fields = "coordinates", key) {
+geocode_google <- function(search_query, fields = "coordinates", key) {
 
-        # STOP RUNNING THE FUNCTION IF ARGUMENTS ARE INCORRECT
+    # STOP RUNNING THE FUNCTION IF ARGUMENTS ARE INCORRECT
 
-        errors <- check_arguments(search_query, fields, key)
+    errors <- check_arguments(search_query, fields, key)
 
-        if (errors[[1]]) {
-                stop(errors[[2]])
-        }
-
-        # LOAD LIBRARIES
-
-        library(RCurl)
-
-        # EXTRACT COORDINATES
-
-            if (any(c("coordinates", "address") %in% fields) || "all" %in% fields) {
-
-                    # construct url for geocoding
-                    url_geocode <- url_google_geocoding(search_query, key)
-
-                    # get data from google
-                    geodata_json <- getURL(url_geocode)
-
-                    # get data from json output
-
-                    geodata_df <- as.data.frame(sapply(search_query, as.character),
-                                                stringsAsFactors = FALSE)
-                    names(geodata_df) <- "search query"
-                    rownames(geodata_df) <- NULL
-                    geodata_df[, 2:5] <- get_geodata_from_json_google(geodata_json)
-
-                    # return dataframe with the geodata
-
-                    if (all(c("coordinates", "address") %in% fields) || "all" %in% fields) {
-                        geodata_df
-                    } else if ("coordinates" %in% fields) {
-                        geodata_df <- geodata_df[, 1:3]
-                    } else {
-                        geodata_df <- geodata_df[, c(1, 4:5)]
-                    }
-
-            }
-
-        # EXTRACT CONTACTS
-
-            if ("contacts" %in% fields || "all" %in% fields) {
-
-                # /// get place_id from Place Search API ///
-
-                # construct url for place search
-                url_place_search <- url_google_place_search(search_query, key)
-
-                # get data from google
-                place_json <- getURL(url_place_search)
-
-                # get place_id from json output
-                place_id <- get_place_id_from_json_google(place_json)
-
-                # /// get contacts from Place Details API ///
-
-                # construct url for place details
-                url_place_details <- url_google_place_details(place_id, key)
-
-                # get data from google
-                place_details_json <- getURL(url_place_details)
-
-                # get place_id from json output
-                contacts <- get_contacts_from_json_google(place_details_json)
-
-                # /// add contacts to our output data frame ///
-
-                if (!exists("geodata_df")) {
-                    geodata_df <- as.data.frame(sapply(search_query, as.character),
-                                            stringsAsFactors = FALSE)
-                    names(geodata_df) <- "search query"
-                    rownames(geodata_df) <- NULL
-                }
-
-                geodata_df[, c("phone", "web page")] <- contacts
-
-            }
-
-        return(geodata_df)
-
+    if (errors[[1]]) {
+            stop(errors[[2]])
     }
 
-    # ///////////////////////////////////////////////
+    # LOAD LIBRARIES
+
+    library(RCurl)
+
+    # EXTRACT COORDINATES
+
+        if (any(c("coordinates", "address") %in% fields) || "all" %in% fields) {
+
+                # construct url for geocoding
+                url_geocode <- url_google_geocoding(search_query, key)
+
+                # get data from google
+                geodata_json <- getURL(url_geocode)
+
+                # get data from json output
+
+                geodata_df <- as.data.frame(sapply(search_query, as.character),
+                                            stringsAsFactors = FALSE)
+                names(geodata_df) <- "search query"
+                rownames(geodata_df) <- NULL
+                geodata_df[, 2:5] <- get_geodata_from_json_google(geodata_json)
+
+                # return dataframe with the geodata
+
+                if (all(c("coordinates", "address") %in% fields) || "all" %in% fields) {
+                    geodata_df
+                } else if ("coordinates" %in% fields) {
+                    geodata_df <- geodata_df[, 1:3]
+                } else {
+                    geodata_df <- geodata_df[, c(1, 4:5)]
+                }
+
+        }
+
+    # EXTRACT CONTACTS
+
+        if ("contacts" %in% fields || "all" %in% fields) {
+
+            # /// get place_id from Place Search API ///
+
+            # construct url for place search
+            url_place_search <- url_google_place_search(search_query, key)
+
+            # get data from google
+            place_json <- getURL(url_place_search)
+
+            # get place_id from json output
+            place_id <- get_place_id_from_json_google(place_json)
+
+            # /// get contacts from Place Details API ///
+
+            # construct url for place details
+            url_place_details <- url_google_place_details(place_id, key)
+
+            # get data from google
+            place_details_json <- getURL(url_place_details)
+
+            # get place_id from json output
+            contacts <- get_contacts_from_json_google(place_details_json)
+
+            # /// add contacts to our output data frame ///
+
+            if (!exists("geodata_df")) {
+                geodata_df <- as.data.frame(sapply(search_query, as.character),
+                                        stringsAsFactors = FALSE)
+                names(geodata_df) <- "search query"
+                rownames(geodata_df) <- NULL
+            }
+
+            geodata_df[, c("phone", "web page")] <- contacts
+
+        }
+
+    return(geodata_df)
+
+}
+
+# ///////////////////////////////////////////////
+```
 
 Now, we can finally call our function and check results.
 
-    # replace "api_key" with your API key
-    pubs_google <- geocode_google(pubs, "all", api_key)
+``` r
+# replace "api_key" with your API key
+pubs_google <- geocode_google(pubs, "all", api_key)
 
-    # check results
-    pubs_google
+# check results
+pubs_google
+```
 
     ##                              search query        lat        lng
     ## 1                   The Angel, Bermondsey 51.5006419 -0.0590456
@@ -1449,150 +1489,154 @@ administrative area - England
 this case we have to loop through the R list to find the `types` of
 information we need and extract the corresponding `long_name`.
 
-    # ///////////////////////////////////////////////
-    # SUPLEMENTARY FUNCTIONS
-    # ///////////////////////////////////////////////
+``` r
+# ///////////////////////////////////////////////
+# SUPLEMENTARY FUNCTIONS
+# ///////////////////////////////////////////////
 
-    # ///////////////////////////////////////////////
-    # 1. GENERATE API CALLS
-    # ///////////////////////////////////////////////
+# ///////////////////////////////////////////////
+# 1. GENERATE API CALLS
+# ///////////////////////////////////////////////
 
-    url_google_rev_geocoding <- function(coordinates_url, key_url) {
+url_google_rev_geocoding <- function(coordinates_url, key_url) {
 
-        # load libraries
-        library(RCurl)
+    # load libraries
+    library(RCurl)
 
-        # convert everything into data frame
+    # convert everything into data frame
 
-        if (is.matrix(coordinates_url) || is.data.frame(coordinates_url)) {
-            coordinates <- data.frame(matrix(NA, nrow(coordinates_url), ncol(coordinates_url)))
-            names(coordinates) <- c("lat", "lng")
-            coordinates[, 1] <- coordinates_url[, 1]
-            coordinates[, 2] <- coordinates_url[, 2]
-        } else if (is.list(coordinates_url)) {
-            coordinates <- data.frame(matrix(NA, nrow = length(coordinates_url), ncol = 2))
-            names(coordinates) <- c("lat", "lng")
-            for (i in 1:length(coordinates_url)) {
-                coordinates[i, 1] <- coordinates_url[[i]][1]
-                coordinates[i, 2] <- coordinates_url[[i]][2]
-            }
-        } else if (is.vector(coordinates_url)) {
-            coordinates <- data.frame(lat = NA, lng = NA)
-            coordinates[1,1] <- coordinates_url[1]
-            coordinates[1,2] <- coordinates_url[2]
+    if (is.matrix(coordinates_url) || is.data.frame(coordinates_url)) {
+        coordinates <- data.frame(matrix(NA, nrow(coordinates_url), ncol(coordinates_url)))
+        names(coordinates) <- c("lat", "lng")
+        coordinates[, 1] <- coordinates_url[, 1]
+        coordinates[, 2] <- coordinates_url[, 2]
+    } else if (is.list(coordinates_url)) {
+        coordinates <- data.frame(matrix(NA, nrow = length(coordinates_url), ncol = 2))
+        names(coordinates) <- c("lat", "lng")
+        for (i in 1:length(coordinates_url)) {
+            coordinates[i, 1] <- coordinates_url[[i]][1]
+            coordinates[i, 2] <- coordinates_url[[i]][2]
         }
-
-        coordinates$lat_lng <- paste0(coordinates$lat, ",", coordinates$lng)
-
-        # google gecoding api url
-        url_geocoding_api <- "https://maps.googleapis.com/maps/api/geocode/"
-
-        # construct search request for reverse geocoding
-        url_rev_geocoding_call <- paste0(url_geocoding_api, "json",
-                                 "?latlng=", coordinates$lat_lng, "&key=", key_url)
-
-        # return data frame with coordinates and API call
-        
-        coordinates$api_call <- url_rev_geocoding_call
-
-        return(coordinates)
-
+    } else if (is.vector(coordinates_url)) {
+        coordinates <- data.frame(lat = NA, lng = NA)
+        coordinates[1,1] <- coordinates_url[1]
+        coordinates[1,2] <- coordinates_url[2]
     }
 
-    # ///////////////////////////////////////////////
-    # 2. EXTRACT DATA FROM JSON
-    # ///////////////////////////////////////////////
+    coordinates$lat_lng <- paste0(coordinates$lat, ",", coordinates$lng)
 
-    get_rev_geodata_from_json_google <- function(geodata_json) {
+    # google gecoding api url
+    url_geocoding_api <- "https://maps.googleapis.com/maps/api/geocode/"
 
-        # load library
-        library(jsonlite)
+    # construct search request for reverse geocoding
+    url_rev_geocoding_call <- paste0(url_geocoding_api, "json",
+                             "?latlng=", coordinates$lat_lng, "&key=", key_url)
 
-        # convert json output into r object
-        geodata <- lapply(geodata_json, fromJSON,simplifyVector = FALSE)
+    # return data frame with coordinates and API call
+    
+    coordinates$api_call <- url_rev_geocoding_call
 
-        # extract address, city and country from the json output
+    return(coordinates)
 
-        address_df <- data.frame(address = NA, city = NA, country = NA)
+}
 
-        for (i in 1:length(geodata)) {
+# ///////////////////////////////////////////////
+# 2. EXTRACT DATA FROM JSON
+# ///////////////////////////////////////////////
 
-              if (geodata[[i]]$status=="OK") {
+get_rev_geodata_from_json_google <- function(geodata_json) {
+
+    # load library
+    library(jsonlite)
+
+    # convert json output into r object
+    geodata <- lapply(geodata_json, fromJSON,simplifyVector = FALSE)
+
+    # extract address, city and country from the json output
+
+    address_df <- data.frame(address = NA, city = NA, country = NA)
+
+    for (i in 1:length(geodata)) {
+
+          if (geodata[[i]]$status=="OK") {
+            
+                # extract address
+                address <- geodata[[i]]$results[[1]]$formatted_address
                 
-                    # extract address
-                    address <- geodata[[i]]$results[[1]]$formatted_address
-                    
-                    # find out how many elements there are in "address_components"
-                    n <- length(geodata[[i]]$results[[1]]$address_components)
+                # find out how many elements there are in "address_components"
+                n <- length(geodata[[i]]$results[[1]]$address_components)
 
-                    # extract city and country
-                    
-                    for (j in 1:n) {
-          
-                          # extract type of "address_components"
-                          type <- geodata[[i]]$results[[1]]$address_components[[j]]$types[[1]]
-                          
-                          # extract city and country
-                          
-                          if (type == "postal_town") {
-                                city <- geodata[[i]]$results[[1]]$address_components[[j]]$long_name 
-                          } else if (type == "country") {
-                                country <- geodata[[i]]$results[[1]]$address_components[[j]]$long_name
-                          }
-           
-                    }
-                    
-                    # prepare output
-                    address_df[i, ] <- c(address, city, country)
-                    
-              } else {
-                    address_df[i, ] <- NA
-              }
-          
-        }
-
-        return(address_df)
-
+                # extract city and country
+                
+                for (j in 1:n) {
+      
+                      # extract type of "address_components"
+                      type <- geodata[[i]]$results[[1]]$address_components[[j]]$types[[1]]
+                      
+                      # extract city and country
+                      
+                      if (type == "postal_town") {
+                            city <- geodata[[i]]$results[[1]]$address_components[[j]]$long_name 
+                      } else if (type == "country") {
+                            country <- geodata[[i]]$results[[1]]$address_components[[j]]$long_name
+                      }
+       
+                }
+                
+                # prepare output
+                address_df[i, ] <- c(address, city, country)
+                
+          } else {
+                address_df[i, ] <- NA
+          }
+      
     }
 
-    # ///////////////////////////////////////////////
-    # MAIN FUNCTION
-    # ///////////////////////////////////////////////
+    return(address_df)
 
-    rev_geocode_google <- function(coordinates, key) {
+}
 
-          # load libraries
-          library(RCurl)
+# ///////////////////////////////////////////////
+# MAIN FUNCTION
+# ///////////////////////////////////////////////
 
-          # construct url for reverse geocoding
-          rev_geocoding_info <- url_google_rev_geocoding(coordinates, key)
+rev_geocode_google <- function(coordinates, key) {
 
-          # get data from google
-          geodata_json <- getURL(rev_geocoding_info$api_call)
+      # load libraries
+      library(RCurl)
 
-          # get data from json output
-          geodata_df <- rev_geocoding_info[, c("lat", "lng")]
-          geodata_df[, 3:5] <- get_rev_geodata_from_json_google(geodata_json)
+      # construct url for reverse geocoding
+      rev_geocoding_info <- url_google_rev_geocoding(coordinates, key)
 
-          # return dataframe with the geodata
-          return(geodata_df)
+      # get data from google
+      geodata_json <- getURL(rev_geocoding_info$api_call)
 
-    }
+      # get data from json output
+      geodata_df <- rev_geocoding_info[, c("lat", "lng")]
+      geodata_df[, 3:5] <- get_rev_geodata_from_json_google(geodata_json)
 
-    # ///////////////////////////////////////////////
+      # return dataframe with the geodata
+      return(geodata_df)
+
+}
+
+# ///////////////////////////////////////////////
+```
 
 Below are the results of running this function on the sample of London
 pubs whose coordinates we got earlier from the same API.
 
-    # extract coordinates from pubs_google
-    pubs_google_crd <- pubs_google[ , c("lat", "lng")]
+``` r
+# extract coordinates from pubs_google
+pubs_google_crd <- pubs_google[ , c("lat", "lng")]
 
-    # replace "api_key" with your API key
-    pubs_rev_google <- rev_geocode_google(pubs_google_crd, api_key)
+# replace "api_key" with your API key
+pubs_rev_google <- rev_geocode_google(pubs_google_crd, api_key)
 
-    # check results
-    pubs_rev_google <- cbind(pubs_df, pubs_rev_google)
-    pubs_rev_google
+# check results
+pubs_rev_google <- cbind(pubs_df, pubs_rev_google)
+pubs_rev_google
+```
 
     ##                                      Pubs        lat        lng
     ## 1                   The Angel, Bermondsey 51.5006419 -0.0590456
@@ -1653,26 +1697,28 @@ longitude.
 
 The formats of API calls are presented below.
 
-    # geocoding format
-    https://nominatim.openstreetmap.org/search/<query>?<params>
+``` r
+# geocoding format
+https://nominatim.openstreetmap.org/search/<query>?<params>
 
-    # geocoding example
-    https://nominatim.openstreetmap.org/search/The%20Churchill%20Arms,%20Notting%20Hill?format=json&polygon=1&addressdetails=1
+# geocoding example
+https://nominatim.openstreetmap.org/search/The%20Churchill%20Arms,%20Notting%20Hill?format=json&polygon=1&addressdetails=1
 
-    # reverse geocoding format
-    https://nominatim.openstreetmap.org/reverse?<query>
+# reverse geocoding format
+https://nominatim.openstreetmap.org/reverse?<query>
 
-    # reverse geocoding example
-    https://nominatim.openstreetmap.org/reverse?format=json&lat=51.5068722&lon=-0.1948221&zoom=18&addressdetails=1
+# reverse geocoding example
+https://nominatim.openstreetmap.org/reverse?format=json&lat=51.5068722&lon=-0.1948221&zoom=18&addressdetails=1
+```
 
 Some parameters are common for both geocoding and reverse geocoding
 calls:
 
--   `format` = \[html | xml | json | jsonv2 | geojson | geocodejson\] -
-    output format;
--   `addressdetails` = \[0|1\] - include breakdown of address into
+-   `format` = \[html \| xml \| json \| jsonv2 \| geojson \|
+    geocodejson\] - output format;
+-   `addressdetails` = \[0\|1\] - include breakdown of address into
     elements;
--   `extratags` = \[0|1\] - additional information (wiki page, opening
+-   `extratags` = \[0\|1\] - additional information (wiki page, opening
     hours etc.);
 -   `accept-language` - in what language to display the search results
     (English = en);
@@ -1694,8 +1740,8 @@ Some parameters are peculiar for each API:
 
     -   `query` = lat, lon - in [WGS
         84](https://en.wikipedia.org/wiki/World_Geodetic_System) format;
-    -   `namedetails` = \[0|1\] - include a list of alternative names in
-        the results;
+    -   `namedetails` = \[0\|1\] - include a list of alternative names
+        in the results;
     -   `zoom` = \[0-18\] - level of detail required for the address
         (default is 18, i.e. a specific building).
 
@@ -1740,193 +1786,197 @@ which to display results (default is English). Both arguments need to be
 provided in the format of a string: `country` as a comma-delimited list
 of codes (e.g. “gb,dr,fr”) and `language` as a single value (e.g. “es”).
 
-    # ///////////////////////////////////////////////
-    # SUPLEMENTARY FUNCTIONS
-    # ///////////////////////////////////////////////
+``` r
+# ///////////////////////////////////////////////
+# SUPLEMENTARY FUNCTIONS
+# ///////////////////////////////////////////////
 
-    # ///////////////////////////////////////////////
-    # 1. GENERATE API CALLS
-    # ///////////////////////////////////////////////
+# ///////////////////////////////////////////////
+# 1. GENERATE API CALLS
+# ///////////////////////////////////////////////
 
-    url_nominatim_search <- function(search_query_url, country_url,
-                                     language_url, email_url) {
+url_nominatim_search <- function(search_query_url, country_url,
+                                 language_url, email_url) {
 
-        # load libraries
-        library(RCurl)
+    # load libraries
+    library(RCurl)
 
-        # nominatim search api url
-        url_nominatim_search_api <- "https://nominatim.openstreetmap.org/search/"
+    # nominatim search api url
+    url_nominatim_search_api <- "https://nominatim.openstreetmap.org/search/"
 
-        # convert input into a list
-        search_query_url <- sapply(search_query_url, as.list)
-        
-        # percent-encode search request
-        search_query_url <- sapply(search_query_url, URLencode)
-        
-        # parameters
-        
-        if (!is.null(country_url)) {
-              country_url <- paste0("&countrycodes=", country_url)
+    # convert input into a list
+    search_query_url <- sapply(search_query_url, as.list)
+    
+    # percent-encode search request
+    search_query_url <- sapply(search_query_url, URLencode)
+    
+    # parameters
+    
+    if (!is.null(country_url)) {
+          country_url <- paste0("&countrycodes=", country_url)
+    }
+    
+    parameters_url <- paste0("?format=json",
+                             "&addressdetails=1&extratags=1&limit=1",
+                             country_url, "&accept-language=", language_url,
+                             "&email=", email_url)
+
+    # construct search request for geocode
+    url_nominatim_search_call <- paste0(url_nominatim_search_api,
+                                        search_query_url, parameters_url)
+
+    return(url_nominatim_search_call)
+
+}
+
+# ///////////////////////////////////////////////
+# 2. EXTRACT DATA FROM JSON
+# ///////////////////////////////////////////////
+
+get_geodata_from_json_nominatim <- function(geodata_json) {
+
+    # load library
+    library(jsonlite)
+
+    # convert json output into r object
+    geodata <- lapply(geodata_json, fromJSON,simplifyVector = FALSE)
+
+    # extract coordinates, address and contacts
+
+    lat_lng_a_c <- data.frame(lat = NA, lng = NA, address = NA, pub_name = NA,
+                              street_name = NA, house_number = NA, suburb = NA,
+                              postcode = NA, state_district = NA, website_1 = NA,
+                              website_2 = NA, website_3 = NA, phone_1 = NA,
+                              phone_2 = NA, email_1 = NA, email_2 = NA)
+
+    for(i in 1:length(geodata)) {
+
+          if(length(geodata[[i]]) != 0) {
+
+                # get data
+
+                lat <- geodata[[i]][[1]]$lat
+                lng <- geodata[[i]][[1]]$lon
+                address <- geodata[[i]][[1]]$display_name
+                pub_name <- geodata[[i]][[1]]$address$pub
+                street_name <- geodata[[i]][[1]]$address$road
+                house_number <- geodata[[i]][[1]]$address$house_number
+                suburb <- geodata[[i]][[1]]$address$suburb
+                postcode <- geodata[[i]][[1]]$address$postcode
+                state_district <- geodata[[i]][[1]]$address$state_district
+                website_1 <- geodata[[i]][[1]]$extratags$website
+                website_2 <- geodata[[i]][[1]]$extratags$url
+                website_3 <- geodata[[i]][[1]]$extratags$`contact:website`
+                phone_1 <- geodata[[i]][[1]]$extratags$phone
+                phone_2 <- geodata[[i]][[1]]$extratags$`contact:phone`
+                email_1 <- geodata[[i]][[1]]$extratags$email
+                email_2 <- geodata[[i]][[1]]$extratags$`contact:website`
+
+                # get rid of NULLs
+
+                info <- list(lat, lng, address, pub_name, street_name,
+                             house_number, suburb, postcode, state_district,
+                             website_1, website_2, website_3,
+                             phone_1, phone_2, email_1, email_2)
+
+                for (j in 1:length(info)) {
+                    if (is.null(info[[j]])) info[[j]] <- NA
+                }
+
+                # create output data frame
+                
+                lat_lng_a_c[i, ] <- info
+
+          } else {
+                lat_lng_a_c[i, ] <- NA
+          }
+    }
+
+    return(lat_lng_a_c)
+
+}
+
+# ///////////////////////////////////////////////
+# MAIN FUNCTION
+# ///////////////////////////////////////////////
+
+geocode_nominatim <- function(search_query, country = NULL, language = "en",
+                              fields = "coordinates", email) {
+
+    # LOAD LIBRARIES
+
+    library(RCurl)
+
+    # EXTRACT DATA
+
+        # construct url for geocoding
+        url_geocode <- url_nominatim_search(search_query, country, language, email)
+
+        # get data from nominatim
+        # wait 3 seconds between each call
+
+        geodata_json <- list()
+
+        for (i in 1:length(url_geocode)) {
+            geodata_json[i] <- getURL(url_geocode[i])
+            Sys.sleep(3)
         }
-        
-        parameters_url <- paste0("?format=json",
-                                 "&addressdetails=1&extratags=1&limit=1",
-                                 country_url, "&accept-language=", language_url,
-                                 "&email=", email_url)
 
-        # construct search request for geocode
-        url_nominatim_search_call <- paste0(url_nominatim_search_api,
-                                            search_query_url, parameters_url)
+        # get data from json output
 
-        return(url_nominatim_search_call)
+        geodata_df <- as.data.frame(sapply(search_query, as.character),
+                                    stringsAsFactors = FALSE)
+        names(geodata_df) <- "search query"
+        rownames(geodata_df) <- NULL
 
-    }
+        geodata_df[, 2:17] <- get_geodata_from_json_nominatim(geodata_json)
+        geodata_df_query <- data.frame(search_query = geodata_df[, 1],
+                                       stringsAsFactors = FALSE)
+        geodata_df_coordinates <- geodata_df[, 2:3]
+        geodata_df_address <- geodata_df[, 4:10]
+        geodata_df_contacts <- geodata_df[, 11:17]
 
-    # ///////////////////////////////////////////////
-    # 2. EXTRACT DATA FROM JSON
-    # ///////////////////////////////////////////////
+        # return dataframe with the geodata
 
-    get_geodata_from_json_nominatim <- function(geodata_json) {
+        geodata_result <- geodata_df_query
 
-        # load library
-        library(jsonlite)
-
-        # convert json output into r object
-        geodata <- lapply(geodata_json, fromJSON,simplifyVector = FALSE)
-
-        # extract coordinates, address and contacts
-
-        lat_lng_a_c <- data.frame(lat = NA, lng = NA, address = NA, pub_name = NA,
-                                  street_name = NA, house_number = NA, suburb = NA,
-                                  postcode = NA, state_district = NA, website_1 = NA,
-                                  website_2 = NA, website_3 = NA, phone_1 = NA,
-                                  phone_2 = NA, email_1 = NA, email_2 = NA)
-
-        for(i in 1:length(geodata)) {
-
-              if(length(geodata[[i]]) != 0) {
-
-                    # get data
-
-                    lat <- geodata[[i]][[1]]$lat
-                    lng <- geodata[[i]][[1]]$lon
-                    address <- geodata[[i]][[1]]$display_name
-                    pub_name <- geodata[[i]][[1]]$address$pub
-                    street_name <- geodata[[i]][[1]]$address$road
-                    house_number <- geodata[[i]][[1]]$address$house_number
-                    suburb <- geodata[[i]][[1]]$address$suburb
-                    postcode <- geodata[[i]][[1]]$address$postcode
-                    state_district <- geodata[[i]][[1]]$address$state_district
-                    website_1 <- geodata[[i]][[1]]$extratags$website
-                    website_2 <- geodata[[i]][[1]]$extratags$url
-                    website_3 <- geodata[[i]][[1]]$extratags$`contact:website`
-                    phone_1 <- geodata[[i]][[1]]$extratags$phone
-                    phone_2 <- geodata[[i]][[1]]$extratags$`contact:phone`
-                    email_1 <- geodata[[i]][[1]]$extratags$email
-                    email_2 <- geodata[[i]][[1]]$extratags$`contact:website`
-
-                    # get rid of NULLs
-
-                    info <- list(lat, lng, address, pub_name, street_name,
-                                 house_number, suburb, postcode, state_district,
-                                 website_1, website_2, website_3,
-                                 phone_1, phone_2, email_1, email_2)
-
-                    for (j in 1:length(info)) {
-                        if (is.null(info[[j]])) info[[j]] <- NA
-                    }
-
-                    # create output data frame
-                    
-                    lat_lng_a_c[i, ] <- info
-
-              } else {
-                    lat_lng_a_c[i, ] <- NA
-              }
+        if("all" %in% fields) {
+            geodata_result <- cbind(geodata_result, geodata_df[, 2:17])
         }
 
-        return(lat_lng_a_c)
+        if("coordinates" %in% fields) {
+            geodata_result <- cbind(geodata_result, geodata_df_coordinates)
+        }
 
-    }
+        if("address" %in% fields) {
+            geodata_result <- cbind(geodata_result, geodata_df_address)
+        }
 
-    # ///////////////////////////////////////////////
-    # MAIN FUNCTION
-    # ///////////////////////////////////////////////
+        if("contacts" %in% fields) {
+            geodata_result <- cbind(geodata_result, geodata_df_contacts)
+        }
 
-    geocode_nominatim <- function(search_query, country = NULL, language = "en",
-                                  fields = "coordinates", email) {
+    return(geodata_result)
 
-        # LOAD LIBRARIES
+}
 
-        library(RCurl)
-
-        # EXTRACT DATA
-
-            # construct url for geocoding
-            url_geocode <- url_nominatim_search(search_query, country, language, email)
-
-            # get data from nominatim
-            # wait 3 seconds between each call
-
-            geodata_json <- list()
-
-            for (i in 1:length(url_geocode)) {
-                geodata_json[i] <- getURL(url_geocode[i])
-                Sys.sleep(3)
-            }
-
-            # get data from json output
-
-            geodata_df <- as.data.frame(sapply(search_query, as.character),
-                                        stringsAsFactors = FALSE)
-            names(geodata_df) <- "search query"
-            rownames(geodata_df) <- NULL
-
-            geodata_df[, 2:17] <- get_geodata_from_json_nominatim(geodata_json)
-            geodata_df_query <- data.frame(search_query = geodata_df[, 1],
-                                           stringsAsFactors = FALSE)
-            geodata_df_coordinates <- geodata_df[, 2:3]
-            geodata_df_address <- geodata_df[, 4:10]
-            geodata_df_contacts <- geodata_df[, 11:17]
-
-            # return dataframe with the geodata
-
-            geodata_result <- geodata_df_query
-
-            if("all" %in% fields) {
-                geodata_result <- cbind(geodata_result, geodata_df[, 2:17])
-            }
-
-            if("coordinates" %in% fields) {
-                geodata_result <- cbind(geodata_result, geodata_df_coordinates)
-            }
-
-            if("address" %in% fields) {
-                geodata_result <- cbind(geodata_result, geodata_df_address)
-            }
-
-            if("contacts" %in% fields) {
-                geodata_result <- cbind(geodata_result, geodata_df_contacts)
-            }
-
-        return(geodata_result)
-
-    }
-
-    # ///////////////////////////////////////////////
+# ///////////////////////////////////////////////
+```
 
 Let’s see the results from running this function.
 
-    # replace "email" with your email address
+``` r
+# replace "email" with your email address
 
-    pubs_nominatim <- geocode_nominatim(pubs_m, country = "gb", fields = "all", email = email)
+pubs_nominatim <- geocode_nominatim(pubs_m, country = "gb", fields = "all", email = email)
 
-    # let's now see the results
+# let's now see the results
 
-    pubs_nominatim[, c(1:4)]
-    pubs_nominatim[, c(1, 5:10)]
-    pubs_nominatim[, c(1, 11:13)]
-    pubs_nominatim[, c(1, 14:17)]
+pubs_nominatim[, c(1:4)]
+pubs_nominatim[, c(1, 5:10)]
+pubs_nominatim[, c(1, 11:13)]
+pubs_nominatim[, c(1, 14:17)]
+```
 
     ##                             search_query                lat
     ## 1                  The Angel, Bermondsey        51.50063675
@@ -2080,165 +2130,169 @@ Let’s see the results from running this function.
 Similarly, the reverse geocoding function below to a large extent
 resembles the one we have built for the Google Maps API.
 
-    # ///////////////////////////////////////////////
-    # SUPLEMENTARY FUNCTIONS
-    # ///////////////////////////////////////////////
+``` r
+# ///////////////////////////////////////////////
+# SUPLEMENTARY FUNCTIONS
+# ///////////////////////////////////////////////
 
-    # ///////////////////////////////////////////////
-    # 1. GENERATE API CALLS
-    # ///////////////////////////////////////////////
+# ///////////////////////////////////////////////
+# 1. GENERATE API CALLS
+# ///////////////////////////////////////////////
 
-    url_nominatim_rev_geocoding <- function(coordinates_url, language_url, email_url) {
+url_nominatim_rev_geocoding <- function(coordinates_url, language_url, email_url) {
 
-        # load libraries
-        library(RCurl)
+    # load libraries
+    library(RCurl)
 
-        # convert everything into a data frame
+    # convert everything into a data frame
 
-        if (is.matrix(coordinates_url) || is.data.frame(coordinates_url)) {
-            coordinates <- data.frame(matrix(NA, nrow(coordinates_url), ncol(coordinates_url)))
-            names(coordinates) <- c("lat", "lng")
-            coordinates[, 1] <- coordinates_url[, 1]
-            coordinates[, 2] <- coordinates_url[, 2]
-        } else if (is.list(coordinates_url)) {
-            coordinates <- data.frame(matrix(NA, nrow = length(coordinates_url), ncol = 2))
-            names(coordinates) <- c("lat", "lng")
-            for (i in 1:length(coordinates_url)) {
-                coordinates[i, 1] <- coordinates_url[[i]][1]
-                coordinates[i, 2] <- coordinates_url[[i]][2]
-            }
-        } else if (is.vector(coordinates_url)) {
-            coordinates <- data.frame(lat = NA, lng = NA)
-            coordinates[1,1] <- coordinates_url[1]
-            coordinates[1,2] <- coordinates_url[2]
+    if (is.matrix(coordinates_url) || is.data.frame(coordinates_url)) {
+        coordinates <- data.frame(matrix(NA, nrow(coordinates_url), ncol(coordinates_url)))
+        names(coordinates) <- c("lat", "lng")
+        coordinates[, 1] <- coordinates_url[, 1]
+        coordinates[, 2] <- coordinates_url[, 2]
+    } else if (is.list(coordinates_url)) {
+        coordinates <- data.frame(matrix(NA, nrow = length(coordinates_url), ncol = 2))
+        names(coordinates) <- c("lat", "lng")
+        for (i in 1:length(coordinates_url)) {
+            coordinates[i, 1] <- coordinates_url[[i]][1]
+            coordinates[i, 2] <- coordinates_url[[i]][2]
         }
-
-        # nominatim reverse api url
-        url_nominatim_reverse_api <- "https://nominatim.openstreetmap.org/reverse"
-        
-        # parameters
-        
-        lat <- coordinates$lat
-        lon <- coordinates$lng
-        
-        parameters_url <- paste0("?format=json", "&lat=", lat, "&lon=", lon,
-                                 "&addressdetails=1&extratags=1","&accept-language=",
-                                 language_url, "&zoom=18", "&email=", email_url)
-
-        # construct search request for geocode
-        url_nominatim_reverse_call <- paste0(url_nominatim_reverse_api, parameters_url)
-
-        # return data frame with coordinates and API call
-        coordinates$api_call <- url_nominatim_reverse_call
-
-        return(coordinates)
-
+    } else if (is.vector(coordinates_url)) {
+        coordinates <- data.frame(lat = NA, lng = NA)
+        coordinates[1,1] <- coordinates_url[1]
+        coordinates[1,2] <- coordinates_url[2]
     }
 
-    # ///////////////////////////////////////////////
-    # 2. EXTRACT DATA FROM JSON
-    # ///////////////////////////////////////////////
+    # nominatim reverse api url
+    url_nominatim_reverse_api <- "https://nominatim.openstreetmap.org/reverse"
+    
+    # parameters
+    
+    lat <- coordinates$lat
+    lon <- coordinates$lng
+    
+    parameters_url <- paste0("?format=json", "&lat=", lat, "&lon=", lon,
+                             "&addressdetails=1&extratags=1","&accept-language=",
+                             language_url, "&zoom=18", "&email=", email_url)
 
-    get_rev_geodata_from_json_nominatim <- function(geodata_json) {
+    # construct search request for geocode
+    url_nominatim_reverse_call <- paste0(url_nominatim_reverse_api, parameters_url)
 
-        # load library
-        library(jsonlite)
+    # return data frame with coordinates and API call
+    coordinates$api_call <- url_nominatim_reverse_call
 
-        # convert json output into r object
-        geodata <- lapply(geodata_json, fromJSON,simplifyVector = FALSE)
+    return(coordinates)
 
-        # extract address, city and country
+}
+
+# ///////////////////////////////////////////////
+# 2. EXTRACT DATA FROM JSON
+# ///////////////////////////////////////////////
+
+get_rev_geodata_from_json_nominatim <- function(geodata_json) {
+
+    # load library
+    library(jsonlite)
+
+    # convert json output into r object
+    geodata <- lapply(geodata_json, fromJSON,simplifyVector = FALSE)
+
+    # extract address, city and country
+    
+    address_df <- data.frame(address = NA, pub_name = NA, street_name = NA,
+                             house_number = NA, suburb = NA, postcode = NA,
+                             state_district = NA, country = NA)
+    
+    for(i in 1:length(geodata)) {
         
-        address_df <- data.frame(address = NA, pub_name = NA, street_name = NA,
-                                 house_number = NA, suburb = NA, postcode = NA,
-                                 state_district = NA, country = NA)
-        
-        for(i in 1:length(geodata)) {
+        if(length(geodata[[i]]) != 0) {
             
-            if(length(geodata[[i]]) != 0) {
-                
-                # get data
-                
-                address <- geodata[[i]]$display_name
-                pub_name <- geodata[[i]]$address$pub
-                street_name <- geodata[[i]]$address$road
-                house_number <- geodata[[i]]$address$house_number
-                suburb <- geodata[[i]]$address$suburb
-                postcode <- geodata[[i]]$address$postcode
-                state_district <- geodata[[i]]$address$state_district
-                country <- geodata[[i]]$address$country
-                
-                # get rid of NULLs
-                
-                info <- list(address, pub_name, street_name, house_number,
-                             suburb, postcode, state_district, country)
-                
-                for (j in 1:length(info)) {
-                    if (is.null(info[[j]])) info[[j]] <- NA
-                }
-                
-                # create output data frame
-                
-                address_df[i, ] <- info
-                
-            } else {
-                address_df[i, ] <- NA
+            # get data
+            
+            address <- geodata[[i]]$display_name
+            pub_name <- geodata[[i]]$address$pub
+            street_name <- geodata[[i]]$address$road
+            house_number <- geodata[[i]]$address$house_number
+            suburb <- geodata[[i]]$address$suburb
+            postcode <- geodata[[i]]$address$postcode
+            state_district <- geodata[[i]]$address$state_district
+            country <- geodata[[i]]$address$country
+            
+            # get rid of NULLs
+            
+            info <- list(address, pub_name, street_name, house_number,
+                         suburb, postcode, state_district, country)
+            
+            for (j in 1:length(info)) {
+                if (is.null(info[[j]])) info[[j]] <- NA
             }
+            
+            # create output data frame
+            
+            address_df[i, ] <- info
+            
+        } else {
+            address_df[i, ] <- NA
         }
-        
-        return(address_df)
-
     }
+    
+    return(address_df)
 
-    # ///////////////////////////////////////////////
-    # MAIN FUNCTION
-    # ///////////////////////////////////////////////
+}
 
-    rev_geocode_nominatim <- function(coordinates, language = "en", email) {
+# ///////////////////////////////////////////////
+# MAIN FUNCTION
+# ///////////////////////////////////////////////
 
-          # load libraries
-          library(RCurl)
+rev_geocode_nominatim <- function(coordinates, language = "en", email) {
 
-          # construct url for reverse geocoding
-          rev_geocoding_info <- url_nominatim_rev_geocoding(coordinates, language, email)
+      # load libraries
+      library(RCurl)
 
-          # get data from nominatim
-          # wait 3 seconds between each call
+      # construct url for reverse geocoding
+      rev_geocoding_info <- url_nominatim_rev_geocoding(coordinates, language, email)
 
-          geodata_json <- list()
+      # get data from nominatim
+      # wait 3 seconds between each call
 
-          for (i in 1:dim(rev_geocoding_info)[1]) {
-              geodata_json[i] <- getURL(rev_geocoding_info$api_call[i])
-              Sys.sleep(3)
-          }
-          
-          # get data from json output
-          geodata_df <- rev_geocoding_info[, c("lat", "lng")]
-          geodata_df[, 3:10] <- get_rev_geodata_from_json_nominatim(geodata_json)
+      geodata_json <- list()
 
-          # return dataframe with the geodata
-          return(geodata_df)
+      for (i in 1:dim(rev_geocoding_info)[1]) {
+          geodata_json[i] <- getURL(rev_geocoding_info$api_call[i])
+          Sys.sleep(3)
+      }
+      
+      # get data from json output
+      geodata_df <- rev_geocoding_info[, c("lat", "lng")]
+      geodata_df[, 3:10] <- get_rev_geodata_from_json_nominatim(geodata_json)
 
-    }
+      # return dataframe with the geodata
+      return(geodata_df)
 
-    # ///////////////////////////////////////////////
+}
+
+# ///////////////////////////////////////////////
+```
 
 Here are the results from running this function on the sample of London
 pubs.
 
-    # extract coordinates from geocoding results
+``` r
+# extract coordinates from geocoding results
 
-    pubs_nominatim_crd <- pubs_nominatim[, c("lat", "lng")]
+pubs_nominatim_crd <- pubs_nominatim[, c("lat", "lng")]
 
-    # replace "email" with your email address
+# replace "email" with your email address
 
-    pubs_rev_nominatim <- rev_geocode_nominatim(pubs_nominatim_crd, email = email)
-    pubs_rev_nominatim <- cbind(pubs_m_df, pubs_rev_nominatim)
+pubs_rev_nominatim <- rev_geocode_nominatim(pubs_nominatim_crd, email = email)
+pubs_rev_nominatim <- cbind(pubs_m_df, pubs_rev_nominatim)
 
-    # let's now see the results
+# let's now see the results
 
-    pubs_rev_nominatim[, 1:4]
-    pubs_rev_nominatim[, c(1, 5:11)]
+pubs_rev_nominatim[, 1:4]
+pubs_rev_nominatim[, c(1, 5:11)]
+```
 
     ##                                     Pubs                lat
     ## 1                  The Angel, Bermondsey        51.50063675
@@ -2379,77 +2433,79 @@ legends in our visualization, I added links just for your reference.
 
 So, before we move on let’s do some data preparation.
 
-    # copy the data from Nominatim API results
-    pubs_map <- pubs_nominatim
+``` r
+# copy the data from Nominatim API results
+pubs_map <- pubs_nominatim
 
-    # add city
-    pubs_map$city = "London"
+# add city
+pubs_map$city = "London"
 
-    # add details about The Glory pub
-    pubs_map[10, 2:11] <- c("51.536327", "-0.077021", "The Glory, 281 Kingsland Rd, Haggerston, London, Greater London, England, E2 8AS, United Kingdom", "The Glory", "Kingsland Rd", "281", "Haggerston", "E2 8AS", "Greater London", "London")
+# add details about The Glory pub
+pubs_map[10, 2:11] <- c("51.536327", "-0.077021", "The Glory, 281 Kingsland Rd, Haggerston, London, Greater London, England, E2 8AS, United Kingdom", "The Glory", "Kingsland Rd", "281", "Haggerston", "E2 8AS", "Greater London", "London")
 
-    # ////////////////////////////
-    # CLEANSING OF CONTACT DETAILS
-    # ////////////////////////////
+# ////////////////////////////
+# CLEANSING OF CONTACT DETAILS
+# ////////////////////////////
 
-    # remove emails
-    pubs_map <- pubs_map[, -c(16, 17)]
+# remove emails
+pubs_map <- pubs_map[, -c(16, 17)]
 
-    # clean phone number
-    pubs_map$phone <- NA
-    for (i in 1:dim(pubs_map)[1]) {
-          pubs_phone <- pubs_map[i, c("phone_1", "phone_2")]
-          match <- !is.na(pubs_phone)
-          if (any(match)) {
-                pubs_map[i, "phone"] <- pubs_phone[match][1]
-          }
-    }
+# clean phone number
+pubs_map$phone <- NA
+for (i in 1:dim(pubs_map)[1]) {
+      pubs_phone <- pubs_map[i, c("phone_1", "phone_2")]
+      match <- !is.na(pubs_phone)
+      if (any(match)) {
+            pubs_map[i, "phone"] <- pubs_phone[match][1]
+      }
+}
 
-    # remove unnecessary phone numbers
-    pubs_map <- pubs_map[, -c(14:15)]
+# remove unnecessary phone numbers
+pubs_map <- pubs_map[, -c(14:15)]
 
-    # clean website
-    pubs_map$website <- NA
-    for (i in 1:dim(pubs_map)[1]) {
-          pubs_website <- pubs_map[i, c("website_1", "website_2", "website_3")]
-          match <- !is.na(pubs_website)
-          if (any(match)) {
-                pubs_map[i, "website"] <- pubs_website[match][1]
-          }
-    }
+# clean website
+pubs_map$website <- NA
+for (i in 1:dim(pubs_map)[1]) {
+      pubs_website <- pubs_map[i, c("website_1", "website_2", "website_3")]
+      match <- !is.na(pubs_website)
+      if (any(match)) {
+            pubs_map[i, "website"] <- pubs_website[match][1]
+      }
+}
 
-    # remove unnecessary websites
-    pubs_map <- pubs_map[, -c(11:13)]
+# remove unnecessary websites
+pubs_map <- pubs_map[, -c(11:13)]
 
-    # ///////////////////
-    # ADD MISSING DETAILS
-    # ///////////////////
+# ///////////////////
+# ADD MISSING DETAILS
+# ///////////////////
 
-    # street name
-    pubs_map$street_name[11] <- "Rupert Street"
+# street name
+pubs_map$street_name[11] <- "Rupert Street"
 
-    # house number
-    pubs_map$house_number[c(2,4,9,11)] <- c("119", "34", "1", "28")
+# house number
+pubs_map$house_number[c(2,4,9,11)] <- c("119", "34", "1", "28")
 
-    # suburb
-    pubs_map$suburb[c(8,9)] <- c("Greenwich", "Holborn")
+# suburb
+pubs_map$suburb[c(8,9)] <- c("Greenwich", "Holborn")
 
-    # phone
-    # for #9 phone number is different from the one Nominatim provided
-    # for #12 phone number is corrent but I want the phone number format to be unified
-    pubs_map$phone <- c("+44 20 7394 3214", "+44 20 7727 4242", "+44 20 7249 5951", "+44 20 7250 0010", "+44 20 8748 9474", "+44 20 7353 3693", "+44 20 7405 0713", "+44 79 4059 6381", "+44 20 7405 4751", "+44 20 7684 0794", "+44 79 2133 6010", "+44 20 7430 2255")
+# phone
+# for #9 phone number is different from the one Nominatim provided
+# for #12 phone number is corrent but I want the phone number format to be unified
+pubs_map$phone <- c("+44 20 7394 3214", "+44 20 7727 4242", "+44 20 7249 5951", "+44 20 7250 0010", "+44 20 8748 9474", "+44 20 7353 3693", "+44 20 7405 0713", "+44 79 4059 6381", "+44 20 7405 4751", "+44 20 7684 0794", "+44 79 2133 6010", "+44 20 7430 2255")
 
-    # website
-    # again for some pubs Nominatim provided a broken link
-    pubs_map$website[c(1,3,4,6,7,9,10,11)] <- c("https://website--7315122201677780705144-pub.business.site", "http://theauldshillelagh.co.uk/", "https://thesekforde.com/", "https://www.tripadvisor.co.uk/Attraction_Review-g186338-d12116922-Reviews-The_Crown_And_Sugarloaf-London_England.html", "https://www.thelamblondon.com/", "https://www.yeoldemitreholborn.co.uk/", "https://www.theglory.co/", "http://theblueposts.co.uk/")
+# website
+# again for some pubs Nominatim provided a broken link
+pubs_map$website[c(1,3,4,6,7,9,10,11)] <- c("https://website--7315122201677780705144-pub.business.site", "http://theauldshillelagh.co.uk/", "https://thesekforde.com/", "https://www.tripadvisor.co.uk/Attraction_Review-g186338-d12116922-Reviews-The_Crown_And_Sugarloaf-London_England.html", "https://www.thelamblondon.com/", "https://www.yeoldemitreholborn.co.uk/", "https://www.theglory.co/", "http://theblueposts.co.uk/")
 
-    # create address to be displayed on the pop-up
-    cols <- c("house_number", "street_name", "suburb", "city", "postcode")
-    pubs_map$address_display <- do.call(paste, c(pubs_map[cols], sep=", "))
+# create address to be displayed on the pop-up
+cols <- c("house_number", "street_name", "suburb", "city", "postcode")
+pubs_map$address_display <- do.call(paste, c(pubs_map[cols], sep=", "))
 
-    # change lat-lng data type
-    pubs_map$lat <- as.numeric(pubs_map$lat)
-    pubs_map$lng <- as.numeric(pubs_map$lng)
+# change lat-lng data type
+pubs_map$lat <- as.numeric(pubs_map$lat)
+pubs_map$lng <- as.numeric(pubs_map$lng)
+```
 
 Now we can proceed with building the map itself.
 
@@ -2475,20 +2531,22 @@ that [here](https://magrittr.tidyverse.org/).
 
 Let’s finally see the result.
 
-    # text to be diplayed on pop-ups
+``` r
+# text to be diplayed on pop-ups
 
-    website <- paste0("<a href='", pubs_map$website, "'>", pubs_map$pub_name, "</a>")
-    center <- "<div style='text-align:center'>"
-    name <- paste0(center, "<b>", website, "</b>", "</div>")
-    address <- paste0(center, pubs_map$address_display, "</div>")
-    phone <- paste0(center, pubs_map$phone, "</div>")
+website <- paste0("<a href='", pubs_map$website, "'>", pubs_map$pub_name, "</a>")
+center <- "<div style='text-align:center'>"
+name <- paste0(center, "<b>", website, "</b>", "</div>")
+address <- paste0(center, pubs_map$address_display, "</div>")
+phone <- paste0(center, pubs_map$phone, "</div>")
 
-    # building the map
+# building the map
 
-    pubs_map %>%
-        leaflet() %>%
-        addTiles() %>%
-        addMarkers(~lng, ~lat, popup = paste0(name, address, phone))
+pubs_map %>%
+    leaflet() %>%
+    addTiles() %>%
+    addMarkers(~lng, ~lat, popup = paste0(name, address, phone))
+```
 
 Conclusion
 ----------

@@ -3,12 +3,15 @@ title: "Breaking Down Geocoding in R: A Complete Guide"
 subtitle: "How to use APIs to find a place you are interested in and visualize it on a map"
 author: "Oleksandr Titorchuk"
 date: "25.04.2020"
-output: html_document
+# output: html_document
 # output: md_document
 # output:
 #     bookdown::pdf_document2:
 #     number_sections: TRUE
 # always_allow_html: yes
+output:
+  md_document:
+    variant: markdown_github
 urlcolor: blue
 ---
 
@@ -1927,7 +1930,7 @@ Leaflet functions are quite self-explanatory. The only thing that might not be f
 
 Let's finally see the result.
 
-``` {r leaflet map, warning = FALSE, message = FALSE}
+``` {r leaflet map, eval=FALSE, warning = FALSE, message = FALSE}
 
 # text to be diplayed on pop-ups
 
