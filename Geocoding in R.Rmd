@@ -3,11 +3,12 @@ title: "Breaking Down Geocoding in R: A Complete Guide"
 subtitle: "How to use APIs to find a place you are interested in and visualize it on a map"
 author: "Oleksandr Titorchuk"
 date: "25.04.2020"
-output: html_document
+# output: html_document
+output: md_document
 # output:
 #     bookdown::pdf_document2:
 #     number_sections: TRUE
-# always_allow_html: yes
+always_allow_html: yes
 urlcolor: blue
 ---
 
